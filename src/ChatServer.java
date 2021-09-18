@@ -26,8 +26,8 @@ public class ChatServer {
                 Scanner scanner = new Scanner(System.in);
 
                 while (true) {
-                    String accpet = inputStream.readUTF();
-                    System.out.println(accpet);
+                    String accept = inputStream.readUTF();
+                    System.out.println(accept);
                     String send = scanner.nextLine();
                     System.out.println("服务器：" + send);
                     outputStream.writeUTF("服务器：" + send);
