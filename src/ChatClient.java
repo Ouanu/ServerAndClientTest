@@ -1,46 +1,41 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class ChatClient {
-    private String host = "localhost";
-    private int port = 7290;
+    public static void main(String[] args) throws Exception{
+        Socket socket = new Socket(InetAddress.getLocalHost(), 7290);
+        System.out.println("Started client socket at" +
+                socket.getLocalSocketAddress());
+        BufferedReader socketReader = new BufferedReader(new InputStreamReader(
+                socket.getInputStream()
+        ));
+        BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(
+                socket.getOutputStream()
+        ));
+        BufferedReader consoleReader = new BufferedReader(
+                new InputStreamReader(System.in)
+        );
 
-    public ChatClient() {}
+        String promptMsg = "Please enter a message (Bye to quit):";
+        String outMsg = null;
 
-    public ChatClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public void chat() {
-        try {
-            Socket socket = new Socket(host, port);
-
-            try {
-                DataInputStream in = new DataInputStream(socket.getInputStream());
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-                Scanner scanner = new Scanner(System.in);
-
-                while (true) {
-                    String send = scanner.nextLine();
-                    System.out.println("客户端：" + send);
-                    out.writeUTF("客户端：" + send);
-                    String accept = in.readUTF();
-                    System.out.println(accept);
-                }
-            } finally {
-                socket.close();
+        System.out.println(promptMsg);
+        while ((outMsg = consoleReader.readLine()) != null) {
+            if (outMsg.equalsIgnoreCase("bye")) {
+                break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public static void main(String[] args) {
-        new ChatClient().chat();
+            socketWriter.write(outMsg);
+            socketWriter.write("\n");
+            socketWriter.flush();
+
+            String inMsg = socketReader.readLine();
+            System.out.println("Server: " + inMsg);
+            System.out.println();
+            System.out.println(promptMsg);
+        }
+        socket.close();
     }
 }
