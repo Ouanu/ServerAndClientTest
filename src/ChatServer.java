@@ -5,8 +5,10 @@ import java.net.Socket;
 
 public class ChatServer {
     public static void main(String[] args) throws Exception {
-        ServerSocket serverSocket = new ServerSocket(7290, 100, InetAddress.getLocalHost());
+//        ServerSocket serverSocket = new ServerSocket(7290, 100, InetAddress.getLocalHost());
+        ServerSocket serverSocket = new ServerSocket(7290);
         System.out.println("Server started at: " + serverSocket);
+
 
         while (true) {
             System.out.println("Waiting for a connection......");
@@ -14,7 +16,7 @@ public class ChatServer {
             final Socket activeSocket = serverSocket.accept();
 
             System.out.println("Received a connection from " + activeSocket);
-            Runnable runnable = ()-> handleClientRequest(activeSocket);
+            Runnable runnable = () -> handleClientRequest(activeSocket);
             new Thread(runnable).start();
         }
     }
@@ -23,11 +25,15 @@ public class ChatServer {
         try {
             BufferedReader socketReader = null;
             BufferedWriter socketWriter = null;
+            BufferedReader consoleReader = null;
             socketReader = new BufferedReader(new InputStreamReader(
                     socket.getInputStream()
             ));
             socketWriter = new BufferedWriter(new OutputStreamWriter(
                     socket.getOutputStream()
+            ));
+            consoleReader = new BufferedReader(new InputStreamReader(
+                    System.in
             ));
 
             String inMsg = null;
