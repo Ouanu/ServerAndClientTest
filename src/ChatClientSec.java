@@ -7,7 +7,7 @@ import java.net.SocketTimeoutException;
 
 public class ChatClientSec {
     public static void main(String[] args) throws Exception{
-        Socket client = new Socket(InetAddress.getLocalHost(), 7290);
+        Socket client = new Socket("120.24.26.98", 7290);
         client.setSoTimeout(10000);
         System.out.println("Started client socket at" +
                 client.getLocalSocketAddress());

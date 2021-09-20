@@ -13,6 +13,8 @@ public class ChatServer {
         boolean checked = true;
         while(checked) {
             client = serverSocket.accept();
+            InetAddress inet = client.getInetAddress();
+            System.out.println(inet);
             System.out.println("connect with client......");
             new Thread(new ServerThread(client)).start();
         }
