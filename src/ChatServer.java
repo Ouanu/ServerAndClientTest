@@ -9,46 +9,51 @@ public class ChatServer {
         ServerSocket serverSocket = new ServerSocket(7290);
         System.out.println("Server started at: " + serverSocket);
 
-
-        while (true) {
-            System.out.println("Waiting for a connection......");
-
-            final Socket activeSocket = serverSocket.accept();
-
-            System.out.println("Received a connection from " + activeSocket);
-            Runnable runnable = () -> handleClientRequest(activeSocket);
-            new Thread(runnable).start();
+        Socket client = null;
+        boolean checked = true;
+        while(checked) {
+            client = serverSocket.accept();
+            System.out.println("connect with client......");
+            new Thread(new ServerThread(client)).start();
         }
+        serverSocket.close();
     }
 
-    public static void handleClientRequest(Socket socket) {
-        try {
-            BufferedReader socketReader = null;
-            BufferedWriter socketWriter = null;
-            BufferedReader consoleReader = null;
-            socketReader = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream()
-            ));
-            socketWriter = new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream()
-            ));
-            consoleReader = new BufferedReader(new InputStreamReader(
-                    System.in
-            ));
+    static class ServerThread implements Runnable {
 
-            String inMsg = null;
+        private Socket client = null;
 
-            while ((inMsg = socketReader.readLine()) != null) {
-                System.out.println("Received from client: " + inMsg);
+        public ServerThread(Socket client) {
+            this.client = client;
+        }
 
-                String outMsg = inMsg;
-                socketWriter.write(outMsg);
-                socketWriter.write("\n");
-                socketWriter.flush();
+        @Override
+        public void run() {
+            try {
+                PrintStream out = new PrintStream(client.getOutputStream());
+                BufferedReader buf = new BufferedReader(new InputStreamReader(
+                        client.getInputStream()
+                ));
+                boolean flag = true;
+                while (flag) {
+                    String str = buf.readLine();
+                    if (str == null || "".equals(str)) {
+                        flag = false;
+                    } else {
+                        if ("bye".equals(str)) {
+                            flag = false;
+                        } else {
+                            out.println("echo:" + str);
+                            System.out.println("echo:" + str);
+                        }
+                    }
+                }
+                out.close();
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
+
 }

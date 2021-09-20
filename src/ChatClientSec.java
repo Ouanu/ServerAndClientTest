@@ -1,9 +1,11 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class ChatClient {
+public class ChatClientSec {
     public static void main(String[] args) throws Exception{
         Socket client = new Socket(InetAddress.getLocalHost(), 7290);
         client.setSoTimeout(10000);
